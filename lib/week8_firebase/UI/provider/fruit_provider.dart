@@ -13,8 +13,7 @@ class FruitProvider extends ChangeNotifier {
 
   bool get isLoading => fruitsState?.state == AsyncValueState.loading;
   bool get hasData => fruitsState?.state == AsyncValueState.success;
-  List<Fruit> get fruits => fruitsState?.data ?? [];
-
+ 
   void fetchFruits() async {
     try {
       fruitsState = AsyncValue.loading();
@@ -27,18 +26,11 @@ class FruitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addFruit(String name, int quantity, double price) async {
-    try {
-      final newFruit = await _repository.addFruit(name: name, quantity: quantity, price: price);
-      final updatedFruits = List<Fruit>.from(fruits)..add(newFruit);
-      fruitsState = AsyncValue.success(updatedFruits);
-      notifyListeners();
-    } catch (error) {
-      // Handle any errors that occur during the add operation
-      fruitsState = AsyncValue.error(error);
-      notifyListeners();
-    }
+  Future<void> addFruit(String name, int quantity, double price) async {
+    await _repository.addFruit(name: name, quantity: quantity, price: price);
+    fetchFruits();
   }
+  
   // function remove 
 
   Future<void> removeFruit(String id) async {
